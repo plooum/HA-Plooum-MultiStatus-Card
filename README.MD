@@ -1,44 +1,82 @@
-# Aquarium Status Card
+# 📊 Plooum Multi Status Card
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
-[![GitHub release](https://img.shields.io/github/v/release/TON_PSEUDO/aquarium-status-card)](https://github.com/TON_PSEUDO/aquarium-status-card/releases)
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/default)
+[![version](https://img.shields.io/badge/version-v1.0.6-blue.svg)](https://github.com/)
 
-Une carte Home Assistant élégante et compacte conçue spécifiquement pour le suivi d'aquariums et de bassins. Elle affiche d'un seul coup d'œil le titre, la température actuelle ainsi que l'état de plusieurs équipements (éclairage, pompe, CO2, stérilisateur UV, etc.).
+**Plooum Multi Status Card** est une carte personnalisée minimaliste et hautement configurable pour Home Assistant (Lovelace). Elle permet d'afficher en un coup d'œil une valeur principale (comme une température) associée à plusieurs indicateurs de statut sous forme d'icônes MDI ou de SVG dynamiques avec changement de couleur selon l'état de vos équipements.
 
----
-
-## 📸 Aperçu
-
-*(Tu peux ajouter ici une capture d'écran de ta carte en action, par exemple en la glissant-déposant dans ton README sur GitHub)*
+<p align="center">
+  <img src="docs/preview.png" alt="Aperçu de la carte" width="400" />
+</p>
 
 ---
 
-## ✨ Fonctionnalités
+## 🌟 Fonctionnalités
 
-- 🌡️ **Affichage de la température** en temps réel avec unité personnalisable.
-- 💡 **Suivi d'état des équipements** (lumières, prises connectées, pompes) avec icônes dynamiques (actifs / inactifs) et gestion des couleurs.
-- 🎨 **Support des icônes SVG personnalisées** (idéal pour afficher des éléments spécifiques comme "UV", "CO2", etc.).
-- 🧭 **Navigation au clic** : Redirection directe vers un tableau de bord dédié (ex: `/dashboard-maison/150l`) lors d'un clic sur la carte.
-- ⚙️ **Éditeur visuel de configuration** intégré pour configurer rapidement les paramètres de base sans toucher au YAML.
+- 🏷️ **Titre personnalisable** et raccourci de navigation au clic (vers un autre dashboard ou une sous-page).
+- 🌡️ **Affichage de valeur clé** facultatif (ex. température, humidité, puissance) avec unité personnalisable.
+- 🚦 **Statuts multi-équipements** :
+  - Support des icônes MDI (`mdi:power`, `mdi:lightbulb`, etc.).
+  - Support des **codes SVG bruts sur-mesure** avec injection dynamique de la couleur de statut via `${color}`.
+  - Couleurs personnalisables indépendamment pour les états **Allumé (On)** et **Éteint (Off)**.
+- ⚙️ **Éditeur visuel complet** intégré (aucun besoin de modifier du YAML à la main).
+- 🎨 Style moderne translucide et épuré adaptable à tous les thèmes.
 
 ---
 
-## 📥 Installation
+## 📦 Installation
 
-### Via HACS (Recommandé)
+### Option 1 : Via HACS (Recommandé)
 
-1. Assurez-vous que [HACS](https://hacs.xyz/) est installé sur votre instance Home Assistant.
-2. Rendez-vous dans **HACS** > **Frontend**.
-3. Cliquez sur les trois petits points en haut à droite, puis sur **Dépôts personnalisés** (Custom repositories).
-4. Ajoutez l'URL de votre dépôt GitHub avec la catégorie **Lovelace**.
-5. Recherchez **"Aquarium Status Card"** et cliquez sur **Télécharger**.
+1. Ouvrez **HACS** dans votre instance Home Assistant.
+2. Cliquez sur les **3 petits points** en haut à droite > **Dépôts personnalisés**.
+3. Ajoutez l'URL de votre dépôt et sélectionnez la catégorie **Lovelace**.
+4. Recherchez `Plooum Multi Status Card` et cliquez sur **Télécharger**.
+5. Rechargez votre navigateur.
 
-### Installation Manuelle
+### Option 2 : Installation manuelle
 
-1. Téléchargez le fichier `aquarium-card.js` depuis la dernière [Release](https://github.com/TON_PSEUDO/aquarium-status-card/releases).
-2. Placez le fichier dans votre dossier `www/` (par exemple : `config/www/aquarium-card.js`).
-3. Ajoutez la ressource dans vos tableaux de bord (via l'interface graphique ou dans votre configuration YAML) :
-   ```yaml
-   resources:
-     - url: /local/aquarium-card.js
-       type: module
+1. Téléchargez le fichier `plooum-multi-status-card.js`.
+2. Placez le fichier dans votre dossier Home Assistant : `www/plooum-multi-status-card/plooum-multi-status-card.js`.
+3. Allez dans **Paramètres** > **Tableaux de bord** > **3 points (haut à droite)** > **Ressources**.
+4. Ajoutez une nouvelle ressource :
+   - **URL** : `/local/plooum-multi-status-card/plooum-multi-status-card.js`
+   - **Type** : `Module JavaScript`
+
+---
+
+## 🛠️ Configuration
+
+### Via l'éditeur visuel (Interface graphique)
+
+1. Éditez votre tableau de bord Lovelace.
+2. Cliquez sur **Ajouter une carte** et cherchez **Plooum Multi Status Card**.
+3. Configurez les options générales (Titre, Entité principale, Lien de navigation).
+4. Ajoutez vos équipements et définissez leurs icônes ou codes SVG ainsi que leurs couleurs.
+
+---
+
+### Exemples d'utilisation
+
+#### 💡 Exemple 1 : Dashboard Général (Exemple générique)
+
+```yaml
+type: custom:plooum-multi-status-card
+title: Salon
+navigation_path: /dashboard-maison/salon
+show_temp: true
+temp_entity: sensor.temperature_salon
+temp_unit: °C
+status_items:
+  - entity: light.lumieres_salon
+    type: icon
+    icon_on: mdi:lightbulb
+    icon_off: mdi:lightbulb-off
+    color_on: "#fdd835"
+    color_off: "#757575"
+  - entity: switch.prise_tv
+    type: icon
+    icon_on: mdi:television
+    icon_off: mdi:television-off
+    color_on: "#4caf50"
+    color_off: "#757575"
