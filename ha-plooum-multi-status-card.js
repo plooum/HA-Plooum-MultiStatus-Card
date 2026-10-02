@@ -27,7 +27,7 @@
    * SPDX-License-Identifier: BSD-3-Clause
    */const s=globalThis;class i extends y$1{constructor(){super(...arguments),this.renderOptions={host:this},this._$Do=void 0;}createRenderRoot(){const t=super.createRenderRoot();return this.renderOptions.renderBefore??=t.firstChild,t}update(t){const r=this.render();this.hasUpdated||(this.renderOptions.isConnected=this.isConnected),super.update(t),this._$Do=D(r,this.renderRoot,this.renderOptions);}connectedCallback(){super.connectedCallback(),this._$Do?.setConnected(true);}disconnectedCallback(){super.disconnectedCallback(),this._$Do?.setConnected(false);}render(){return E}}i._$litElement$=true,i["finalized"]=true,s.litElementHydrateSupport?.({LitElement:i});const o=s.litElementPolyfillSupport;o?.({LitElement:i});(s.litElementVersions??=[]).push("4.2.2");
 
-  const CARD_VERSION = 'v0.8.0';
+  const CARD_VERSION = 'v0.9.0';
 
   class HaPlooumMultiStatusCard extends i {
     static get properties() {
@@ -59,8 +59,9 @@
 
     static getStubConfig() {
       return { 
-        title: '150L', 
-        navigation_path: '/dashboard-maison/150l', 
+        title: 'Mon Équipement', 
+        tap_action_type: 'navigate',
+        navigation_path: '/dashboard-maison', 
         temp_entity: 'sensor.temperature',
         temp_unit: '°C',
         show_temp: true,
@@ -78,11 +79,14 @@
       }
 
       const title = this.config.title || '';
-      const navPath = this.config.navigation_path;
       const tempEntityId = this.config.temp_entity;
       const tempUnit = this.config.temp_unit || '°C';
       const showTemp = this.config.show_temp !== false;
       const statusItems = this.config.status_items || [];
+      
+      // Gestion de l'action au clic
+      const actionType = this.config.tap_action_type || 'navigate';
+      const cursorStyle = actionType === 'none' ? 'default' : 'pointer';
 
       let tempString = '-- ' + tempUnit;
       if (tempEntityId && this.hass.states && this.hass.states[tempEntityId]) {
@@ -92,12 +96,16 @@
         }
       }
 
-      const cardStyle = showTemp 
+      const gridStyle = showTemp 
         ? 'grid-template-areas: "title" "temp" "status"; grid-template-rows: auto auto auto;'
         : 'grid-template-areas: "title" "status"; grid-template-rows: auto auto;';
 
       return b`
-      <div class="card" style="${cardStyle}" @click="${() => this._handleClick(navPath)}">
+      <div 
+        class="card" 
+        style="${gridStyle} cursor:${cursorStyle};" 
+        @click="${this._handleAction}"
+      >
         <div class="title">${title}</div>${showTemp ? b`<div class="temp">${tempString}</div>` : ''}
         <div class="status">
           ${statusItems.map(item => {
@@ -136,15 +144,41 @@
     `;
     }
 
-    _handleClick(path) {
-      if (path) {
-        history.pushState(null, '', path);
-        const event = new CustomEvent('location-changed', {
-          detail: { replace: false },
-          bubbles: true,
-          composed: true,
-        });
-        window.dispatchEvent(event);
+    _handleAction() {
+      if (!this.config || !this.hass) return;
+
+      const actionType = this.config.tap_action_type || 'navigate';
+
+      switch (actionType) {
+        case 'navigate':
+          if (this.config.navigation_path) {
+            history.pushState(null, '', this.config.navigation_path);
+            window.dispatchEvent(new CustomEvent('location-changed', {
+              detail: { replace: false },
+              bubbles: true,
+              composed: true,
+            }));
+          }
+          break;
+
+        case 'toggle':
+          if (this.config.tap_action_entity) {
+            // Utilisation du service générique homeassistant.toggle
+            this.hass.callService('homeassistant', 'toggle', {
+              entity_id: this.config.tap_action_entity
+            });
+          }
+          break;
+
+        case 'script':
+          if (this.config.tap_action_script) {
+            const scriptId = this.config.tap_action_script;
+            const domain = scriptId.split('.')[0];
+            this.hass.callService(domain, 'turn_on', {
+              entity_id: scriptId
+            });
+          }
+          break;
       }
     }
 
@@ -161,7 +195,6 @@
         border: none;
         display: grid;
         row-gap: 4px;
-        cursor: pointer;
         box-sizing: border-box;
       }
       .title {
@@ -209,20 +242,46 @@
         return b``;
       }
 
+      const actionType = this.config.tap_action_type || 'navigate';
+
+      // Construction dynamique du schéma de l'éditeur
       const schema = [
         { name: 'title', label: 'Titre de la carte', selector: { text: {} } },
-        { name: 'navigation_path', label: 'Chemin de navigation (ex: /dashboard/150l)', selector: { text: {} } },
-        { name: 'show_temp', label: 'Afficher la ligne de température', selector: { boolean: {} } },
+        { 
+          name: 'tap_action_type', 
+          label: 'Action au clic sur la carte', 
+          selector: { 
+            select: { 
+              options: [
+                { value: 'navigate', label: 'Navigation vers une autre page' },
+                { value: 'toggle', label: 'Basculer une entité (Toggle)' },
+                { value: 'script', label: 'Exécuter un script' },
+                { value: 'none', label: 'Aucune action' }
+              ] 
+            } 
+          } 
+        }
       ];
+
+      // Champs conditionnels selon l'action choisie
+      if (actionType === 'navigate') {
+        schema.push({ name: 'navigation_path', label: 'Chemin de navigation (ex: /dashboard/vue1)', selector: { text: {} } });
+      } else if (actionType === 'toggle') {
+        schema.push({ name: 'tap_action_entity', label: 'Entité à basculer (switch, light...)', selector: { entity: {} } });
+      } else if (actionType === 'script') {
+        schema.push({ name: 'tap_action_script', label: 'Script à exécuter', selector: { entity: { domain: 'script' } } });
+      }
+
+      schema.push({ name: 'show_temp', label: 'Afficher la ligne de valeur principale', selector: { boolean: {} } });
 
       if (this.config.show_temp !== false) {
         schema.push(
           { 
             name: 'temp_entity', 
-            label: 'Entité de température', 
+            label: 'Entité principale (ex: température)', 
             selector: { entity: { domain: 'sensor' } } 
           },
-          { name: 'temp_unit', label: 'Unité de température', selector: { text: {} } }
+          { name: 'temp_unit', label: 'Unité (ex: °C)', selector: { text: {} } }
         );
       }
 
@@ -512,7 +571,6 @@
     }
   }
 
-  // --- Définition sécurisée des Custom Elements ---
   if (!customElements.get('ha-plooum-multi-status-card')) {
     customElements.define('ha-plooum-multi-status-card', HaPlooumMultiStatusCard);
   }
@@ -520,7 +578,6 @@
     customElements.define('ha-plooum-multi-status-card-editor', HaPlooumMultiStatusCardEditor);
   }
 
-  // --- Enregistrement sécurisé dans le sélecteur d'interface Home Assistant ---
   window.customCards = window.customCards || [];
   if (!window.customCards.some(card => card.type === 'ha-plooum-multi-status-card')) {
     window.customCards.push({
