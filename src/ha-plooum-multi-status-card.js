@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 
-const CARD_VERSION = 'v0.9.0';
+const CARD_VERSION = '1.0.0';
 
 class HaPlooumMultiStatusCard extends LitElement {
   static get properties() {

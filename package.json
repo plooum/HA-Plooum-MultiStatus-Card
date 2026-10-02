@@ -1,6 +1,6 @@
 {
   "name": "ha-plooum-multi-status-card",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "description": "Custom card for combining multiple status (for example temperatures, light, bubble or co2 of a terrarium or an aquarium...) in Home Assistant",
   "main": "src/ha-plooum-multi-status-card.js",
   "scripts": {
