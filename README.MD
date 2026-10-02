@@ -1,24 +1,20 @@
-# 📊 Plooum Multi Status Card
+# HA Plooum Multi Status Card
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/default)
 [![version](https://img.shields.io/badge/version-v1.0.0-blue.svg)](https://github.com/)
 
-**Plooum Multi Status Card** is a minimalist, highly configurable custom card for Home Assistant (Lovelace). It allows you to display a main value (such as temperature) at a glance, alongside multiple status indicators using MDI icons or dynamic SVGs that change color based on your devices' states.
+An elegant and compact Home Assistant card designed to track multiple entities (such as temperature, lighting, air pump, and CO2 in an aquarium).
+
+## 🚀 Features
+
+- Display the state of a main entity (e.g., temperature).
+- Track multiple boolean entities via changing icon colors (lights, switches, CO2, UV).
+- Support for custom SVG icons or standard MDI icons with independent colors for **On** and **Off** states.
+- Configurable click actions (e.g., redirect to a dashboard, toggle an entity state, or execute a script).
+- Built-in visual configuration editor (no need to manually edit YAML unless you want to).
+- Clean, translucent modern styling that seamlessly adapts to all themes.
 
 ![Preview](https://github.com/plooum/HA-Plooum-MultiStatus-Card/blob/main/docs/preview.png)
-
----
-
-## 🌟 Features
-
-- 🏷️ **Customizable title** with a configurable tap action (navigate, toggle, execute a script).
-- 🌡️ **Main value display** (optional) for key metrics (e.g., temperature, humidity, power) with customizable units.
-- 🚦 **Multi-device statuses**:
-  - Support for MDI icons (`mdi:power`, `mdi:lightbulb`, etc.).
-  - Support for **raw custom SVG codes** with dynamic status color injection via `${color}`.
-  - Independently customizable colors for **On** and **Off** states.
-- ⚙️ **Full visual editor** built-in (no need to manually edit YAML unless you want to).
-- 🎨 Clean, translucent modern styling that seamlessly adapts to all themes.
 
 ---
 
@@ -54,8 +50,10 @@ You can configure this card either through the Visual Editor or manually via YAM
 |---|---|---|---|
 | `type` | string | **Required** | Must be `custom:plooum-multi-status-card`. |
 | `title` | string | Optional | The title displayed at the top of the card. |
-| `tap_action_type` | string | Optional | Action to perform on card click (e.g., `navigate`). |
+| `tap_action_type` | string | Optional | Action to perform on card click (`navigate`, `toggle`, `script`, or `none`). |
 | `navigation_path` | string | Optional | URL or dashboard path to redirect to if `tap_action_type` is `navigate`. |
+| `tap_action_entity` | string | Optional | Entity ID to toggle if `tap_action_type` is `toggle`. |
+| `tap_action_script` | string | Optional | Script entity ID to execute if `tap_action_type` is `script`. |
 | `show_temp` | boolean | Optional | Set to `true` to display the main entity value. |
 | `temp_entity` | string | Optional | The entity ID to display as the main value (e.g., `sensor.temperature`). |
 | `temp_unit` | string | Optional | The unit of measurement to display next to the value (e.g., `°C`). |
@@ -107,7 +105,7 @@ status_items:
     color_off: "#757575"
 ```
 
-### 💡 Example 1: Dashboard with Custom SVG and Grid Layout
+### 💡 Example 2: Dashboard with Custom SVG and Grid Layout
 
 ```yaml
 type: custom:plooum-multi-status-card
@@ -133,4 +131,19 @@ status_items:
 grid_options:
   columns: 3
   rows: auto
+```
+
+  ### 💡 Example 3: Card with Toggle Tap Action
+
+```yaml
+  type: custom:plooum-multi-status-card
+title: Ceiling Light
+tap_action_type: toggle
+tap_action_entity: light.ceiling_light
+show_temp: false
+status_items:
+  - entity: light.ceiling_light
+    type: icon
+    icon_on: mdi:lightbulb
+    icon_off: mdi:lightbulb-off
 ```
