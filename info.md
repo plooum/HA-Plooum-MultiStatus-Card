@@ -1,14 +1,14 @@
 # HA Plooum Multi Status Card
 
-Une carte Home Assistant élégante et compacte conçue pour le suivi de multiples entités (exemple température/lumière/bulleur/CO2 d'un aquarium).
+An elegant and compact Home Assistant card designed to track multiple entities (such as temperature, lighting, air pump, and CO2 in an aquarium).
 
-## 🚀 Fonctionnalités
-- Affichage du retour d'une entité (ex : température).
-- Suivi de l'état d'une entité texte via l'affichage d'un texte au centre de la carte et de plusieurs entités booléennes via le changement de couleur d'icones (lumières, prises, CO2, UV).
-- Support des icônes SVG personnalisées ou d'icones standards.
-- Action au clic (ex : redirection vers un tableau de bord ou changement de l'état d'une entité).
-- Éditeur visuel de configuration intégré.
+## 🚀 Features
+- Display the state of an entity (e.g., temperature).
+- Track text entity status with a center label, and multiple boolean entities via changing icon colors (lights, switches, CO2, UV).
+- Support for custom SVG icons or standard icons.
+- Click action (e.g., redirect to a dashboard or toggle an entity state).
+- Built-in visual configuration editor.
 
-![Exemple](https://github.com/plooum/HA-Plooum-MultiStatus-Card/blob/main/docs/preview.png)
+![Example](https://github.com/plooum/HA-Plooum-MultiStatus-Card/blob/main/docs/preview.png)
 
-Pour plus d'informations et la documentation complète, consultez le [README sur GitHub](https://github.com/plooum/HA-Card-Aquarium).
+For more information and full documentation, check out the [GitHub README](https://github.com/plooum/HA-Plooum-MultiStatus-Card).
