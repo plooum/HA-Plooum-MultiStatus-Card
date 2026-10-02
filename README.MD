@@ -11,7 +11,7 @@
 
 ## 🌟 Features
 
-- 🏷️ **Customizable title** with a click-to-navigate shortcut (to another dashboard or sub-view).
+- 🏷️ **Customizable title** with a configurable tap action (navigate, toggle, execute a script).
 - 🌡️ **Main value display** (optional) for key metrics (e.g., temperature, humidity, power) with customizable units.
 - 🚦 **Multi-device statuses**:
   - Support for MDI icons (`mdi:power`, `mdi:lightbulb`, etc.).
